@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<div>
+    thymeleaf是html页面标签的扩展标签
+    <br />
+    取值：<input type="text" th:value="${hello}" /><br />
+    取值：<div th:text="${hello}" />我是div块的内容</div><br />
+循环：
+<br />
+<div th:each="string:${strings}" th:text="${string}"/>我是div块的内容</div>
+<input type="text" th:each="string:${strings}" th:value="${string}"/>
+<br />
+判断：
+<div th:if="${1==0}">1=1</div>
+三元表达式：
+<div th:text="(${ifFlag=='0'})?'true':'false'">1=1</div>
+<br />
+页面引入：<br />
+<!--<div th:include="includeDemo"></div>-->
+<div th:include="includeDemo::fragmentPage"></div>
+<br />
+js函数调用
+<a th:href="'javascript:a(\''+${hello}+'\')'">点我</a>
+
+
+<script language="JavaScript">
+    function a(param) {
+        alert("a方法"+param);
+    }
+</script>
+</body>
+</html>
