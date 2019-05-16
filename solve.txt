@@ -1,0 +1,11 @@
+redis保护模式导致远程连接出错
+1、	解决：
+1）：修改redis配置文件 进入：vim /usr/local/redis/redis.conf
+	将bind 后面绑定的ip后面加入你本机外网的ip
+
+
+		2): 将redis.conf中安全模式关闭 进入：vim /usr/local/redis/redis.conf
+			将protected-mode yes改为 protected-mode no
+
+
+2、	实际有效启动命令需要指定配置文件：  bin/redis-server /usr/local/redis/redis.conf
