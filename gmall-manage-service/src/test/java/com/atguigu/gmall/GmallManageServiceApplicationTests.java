@@ -23,6 +23,7 @@ public class GmallManageServiceApplicationTests {
 		String ping = jedis.ping();
 
 		System.out.println(ping);
+
 	}
 
 }

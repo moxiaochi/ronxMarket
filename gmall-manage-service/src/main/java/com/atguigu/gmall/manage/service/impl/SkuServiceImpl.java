@@ -1,10 +1,12 @@
 package com.atguigu.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.bean.*;
 import com.atguigu.gmall.manage.mapper.*;
 import com.atguigu.gmall.service.SkuService;
 import com.atguigu.gmall.util.RedisUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
@@ -69,16 +71,11 @@ public class SkuServiceImpl implements SkuService {
     }
 
     /**
-     * 根据id查询sku和图片集合
+     *从db中查询skuId
      * @param skuId
      * @return
      */
-    @Override
-    public SkuInfo getSkuById(String skuId) {
-
-        // 缓存redis查询
-        Jedis jedis = redisUtil.getJedis();
-
+    public SkuInfo getSkuByIdFromDB(String skuId){
 
         //查询sku信息
         SkuInfo skuInfoParam = new SkuInfo();
@@ -90,6 +87,33 @@ public class SkuServiceImpl implements SkuService {
         skuImageParam.setSkuId(skuId);
         List<SkuImage> skuImages = skuImageMapper.select(skuImageParam);
         skuInfo.setSkuImageList(skuImages);
+
+        return skuInfo;
+    }
+    /**
+     * 根据id查询sku和图片集合
+     * @param skuId
+     * @return
+     */
+    @Override
+    public SkuInfo getSkuById(String skuId) {
+
+        SkuInfo skuInfo = null;
+        String skuKey = "sku:"+skuId+":info";
+
+        // 缓存redis查询
+        Jedis jedis = redisUtil.getJedis();
+        String s = jedis.get(skuKey);
+
+        if (StringUtils.isNotBlank(s)){
+            skuInfo = JSON.parseObject(s, SkuInfo.class);
+        }else {
+            //db查询
+            skuInfo = getSkuByIdFromDB(skuId);
+
+            //同步redis
+            jedis.set(skuKey,JSON.toJSONString(skuInfo));
+        }
 
         return skuInfo;
     }
